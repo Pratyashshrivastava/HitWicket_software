@@ -1,3 +1,108 @@
+// Define a base class for all characters
+
+let gameState = {
+  board: [
+    ["A-P1", "A-P2", "A-H1", "A-H2", "A-P3"],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["B-P1", "B-P2", "B-H1", "B-H2", "B-P3"],
+  ],
+  current_player: "A", // Start with player A
+  moveHistory: [],
+};
+
+class Character {
+  constructor(type, moveSet) {
+    this.type = type;
+    this.moveSet = moveSet; // An array of possible move directions
+  }
+
+  // Method to get valid moves based on position and board state
+  getValidMoves(row, col, player, board) {
+    const validMoves = [];
+    for (let move of this.moveSet) {
+      let [newRow, newCol] = this.calculateNewPosition(row, col, move, player);
+      if (this.isValidPosition(newRow, newCol, player, board)) {
+        validMoves.push(move);
+      }
+    }
+    return validMoves;
+  }
+
+  // Calculate new position based on move and player perspective
+  calculateNewPosition(row, col, move, player) {
+    if (player === "A") {
+      // Player A's perspective
+      if (move === "F") return [row - 1, col];
+      if (move === "B") return [row + 1, col];
+      if (move === "L") return [row, col - 1];
+      if (move === "R") return [row, col + 1];
+    } else if (player === "B") {
+      // Player B's perspective (reversed)
+      if (move === "F") return [row + 1, col];
+      if (move === "B") return [row - 1, col];
+      if (move === "L") return [row, col - 1];
+      if (move === "R") return [row, col + 1];
+    }
+    return [row, col];
+  }
+
+  // Check if a position is valid on the board
+  isValidPosition(newRow, newCol, player, board) {
+    const boardSize = 5;
+    if (
+      newRow < 0 ||
+      newRow >= boardSize ||
+      newCol < 0 ||
+      newCol >= boardSize
+    ) {
+      return false;
+    }
+    const targetCell = board[newRow][newCol];
+    if (!targetCell || !targetCell.startsWith(player)) {
+      return true;
+    }
+    return false;
+  }
+}
+
+// Define a Pawn class
+class Pawn extends Character {
+  constructor() {
+    super("Pawn", ["L", "R", "F", "B"]);
+  }
+}
+
+// Define a Hero1 class
+class Hero1 extends Character {
+  constructor() {
+    super("Hero1", ["L", "R", "F", "B"]);
+  }
+}
+
+// Define a Hero2 class
+class Hero2 extends Character {
+  constructor() {
+    super("Hero2", ["FL", "FR", "BL", "BR"]);
+  }
+
+  calculateNewPosition(row, col, move, player) {
+    if (player === "A") {
+      if (move === "FL") return [row - 2, col - 2];
+      if (move === "FR") return [row - 2, col + 2];
+      if (move === "BL") return [row + 2, col - 2];
+      if (move === "BR") return [row + 2, col + 2];
+    } else if (player === "B") {
+      if (move === "FL") return [row + 2, col + 2];
+      if (move === "FR") return [row + 2, col - 2];
+      if (move === "BL") return [row - 2, col - 2];
+      if (move === "BR") return [row - 2, col + 2];
+    }
+    return [row, col];
+  }
+}
+
 // DOM Elements
 const boardElement = document.getElementById("board");
 const statusElement = document.getElementById("status");
@@ -10,15 +115,44 @@ ws.onopen = function () {
   console.log("Connected to WebSocket server.");
 };
 
+function checkForWin() {
+  const playerAChars = gameState.board
+    .flat()
+    .filter((cell) => cell && cell.startsWith("A"));
+  const playerBChars = gameState.board
+    .flat()
+    .filter((cell) => cell && cell.startsWith("B"));
+
+  if (playerAChars.length === 0) {
+    alert("Player B wins!");
+    ws.send(JSON.stringify({ type: "game_over", winner: "B" }));
+    disableMoveButtons();
+    return true;
+  } else if (playerBChars.length === 0) {
+    alert("Player A wins!");
+    ws.send(JSON.stringify({ type: "game_over", winner: "A" }));
+    disableMoveButtons();
+    return true;
+  }
+  return false;
+}
+
+// WebSocket event handlers
 ws.onmessage = function (event) {
   const data = JSON.parse(event.data);
   console.log("Received data from server:", data);
 
   if (data.status === "valid") {
-    renderBoard(data.new_state.board); // Re-render the entire board
-    statusElement.innerText = `Current Player: ${data.new_state.current_player}`; // Update current player status
+    gameState.board = data.new_state.board; // Update the board state
+    renderBoard(gameState.board); // Re-render the entire board
+    gameState.current_player = data.new_state.current_player; // Update current player status
+    statusElement.innerText = `Current Player: ${gameState.current_player}`;
     selectedPiece = null; // Reset selected piece
-    disableMoveButtons(); // Disable all move buttons after move
+
+    // Check for win condition
+    if (!checkForWin()) {
+      disableMoveButtons(); // Disable all move buttons after move
+    }
   } else {
     // If the move was invalid, don't change the player turn
     alert(data.message); // Show an alert for the invalid move
@@ -55,6 +189,13 @@ function renderBoard(board) {
   }
 }
 
+function addMoveToHistory(move) {
+  const moveHistoryElement = document.querySelector("#moveHistory ul");
+  const moveItem = document.createElement("li");
+  moveItem.innerText = move;
+  moveHistoryElement.appendChild(moveItem);
+}
+
 // Function to select a piece
 function selectPiece(piece, row, col) {
   selectedPiece = { piece, row, col };
@@ -82,77 +223,44 @@ function enableValidMoves(piece, row, col) {
     BR: document.querySelector('.move-button[data-direction="BR"]'),
   };
 
-  // Disable all buttons initially
-  Object.values(moveButtons).forEach((button) => (button.disabled = true));
-
-  // Determine valid moves based on the piece type and enable those buttons
-  const validMoves = getValidMoves(piece, row, col);
-  validMoves.forEach((move) => {
-    if (moveButtons[move]) {
-      moveButtons[move].disabled = false; // Enable only valid move buttons
-    }
-  });
-}
-
-// Function to determine valid moves for the selected piece
-function getValidMoves(piece, row, col) {
-  const validMoves = [];
-  const characterType = piece.split("-")[1]; // Get the type (P1, H1, H2)
-  const player = piece[0]; // Get the player (A or B)
-
-  if (
-    characterType === "P1" ||
-    characterType === "P2" ||
-    characterType === "P3"
-  ) {
-    // Pawns move one block in any direction
-    if (isValidPosition(row - 1, col, player)) validMoves.push("F");
-    if (isValidPosition(row + 1, col, player)) validMoves.push("B");
-    if (isValidPosition(row, col - 1, player)) validMoves.push("L");
-    if (isValidPosition(row, col + 1, player)) validMoves.push("R");
-  } else if (characterType === "H1") {
-    // Hero1 moves two blocks straight in any direction
-    if (isValidPosition(row - 2, col, player)) validMoves.push("F");
-    if (isValidPosition(row + 2, col, player)) validMoves.push("B");
-    if (isValidPosition(row, col - 2, player)) validMoves.push("L");
-    if (isValidPosition(row, col + 2, player)) validMoves.push("R");
-  } else if (characterType === "H2") {
-    // Hero2 moves two blocks diagonally in any direction
-    if (isValidPosition(row - 2, col - 2, player)) validMoves.push("FL");
-    if (isValidPosition(row - 2, col + 2, player)) validMoves.push("FR");
-    if (isValidPosition(row + 2, col - 2, player)) validMoves.push("BL");
-    if (isValidPosition(row + 2, col + 2, player)) validMoves.push("BR");
-  }
-
-  return validMoves;
-}
-
-// Helper function to check if a move is valid based on the board and player
-function isValidPosition(newRow, newCol, player) {
-  const boardSize = 5;
-
-  // Check if the position is within the board boundaries
-  if (newRow < 0 || newRow >= boardSize || newCol < 0 || newCol >= boardSize) {
-    return false;
-  }
-
-  // Get the target cell content
-  const targetCell = boardElement.querySelector(
-    `[data-row="${newRow}"][data-col="${newCol}"]`
+  // Hide all buttons initially
+  Object.values(moveButtons).forEach(
+    (button) => (button.style.display = "none")
   );
 
-  // Check if the target cell is empty or contains an opponent's piece
-  if (!targetCell.innerText || !targetCell.innerText.startsWith(player)) {
-    return true;
+  // Get the character type and create an instance of the appropriate class
+  let character;
+  const characterType = piece.split("-")[1];
+  if (characterType.startsWith("P")) {
+    character = new Pawn();
+  } else if (characterType === "H1") {
+    character = new Hero1();
+  } else if (characterType === "H2") {
+    character = new Hero2();
   }
 
-  return false;
+  // Get valid moves for the character
+  const validMoves = character.getValidMoves(
+    row,
+    col,
+    piece[0],
+    gameState.board
+  );
+
+  // Show and enable only the valid move buttons
+  validMoves.forEach((move) => {
+    if (moveButtons[move]) {
+      moveButtons[move].style.display = "inline-block";
+      moveButtons[move].disabled = false;
+    }
+  });
 }
 
 // Disable all move buttons
 function disableMoveButtons() {
   document.querySelectorAll(".move-button").forEach((button) => {
     button.disabled = true;
+    button.style.display = "none";
   });
 }
 
@@ -183,8 +291,10 @@ function sendMove(direction) {
   ws.send(
     JSON.stringify({ type: "move", player: selectedPiece.piece[0], move })
   );
-
-  // Keep the move buttons enabled to allow retrying after an invalid move
+  gameState.moveHistory.push(move);
+  addMoveToHistory(move);
+  // Disable buttons after sending move to avoid double clicks
+  disableMoveButtons();
 }
 
 // Restart button logic

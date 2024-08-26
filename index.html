@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess-like Game</title>
     <style>
-        /* Add basic styling for the game grid and pieces */
         body {
             display: flex;
             flex-direction: column;
@@ -28,6 +27,8 @@
             grid-template-rows: repeat(5, 50px);
             gap: 5px;
             margin-top: 20px;
+            transition: transform 0.5s ease-in-out;
+
         }
 
         .cell {
@@ -62,15 +63,33 @@
             width: 260px;
         }
 
+
         .move-button {
             margin: 5px;
-            padding: 5px;
+            padding: 10px 20px;
             cursor: pointer;
-            border: 1px solid #000;
-            background-color: lightgray;
-            flex-basis: 45%;
+            border: none;
+            background-color: #0c1a37;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 5px;
             text-align: center;
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            transition: background-color 0.3s ease;
         }
+
+        .move-button:hover {
+            background-color: #162a53;
+        }
+
+        .move-button:disabled {
+            background-color: #2c3e50;
+            cursor: not-allowed;
+        }
+
 
         .restart-button {
             margin-top: 20px;
@@ -82,12 +101,10 @@
             color: white;
         }
 
-        /* Ensure paragraph text is white */
         p {
             color: white;
         }
 
-        /* Move history styling */
         #moveHistory {
             margin-top: 20px;
             width: 300px;
@@ -106,29 +123,63 @@
             margin: 5px 0;
         }
 
-        /* Captured Piece Styling in Move History */
         .captured {
             color: #ff4d4d;
-            /* Highlight captured pieces in red */
+        }
+
+        .rotated-board {
+            transform: rotate(180deg);
+        }
+
+        .rotated-board .cell {
+            transform: rotate(180deg);
+        }
+
+        #winnerMessage {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+            text-align: center;
+            display: none;
+        }
+
+        #winnerMessage.winner {
+            display: block;
+            background-color: #040b29;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #selectedPiece {
+            margin-top: 10px;
+            color: white;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <h1>Chess-like Game</h1>
+    <h1>Bishops Gone Wild</h1>
+    <div id="winnerMessage"></div>
+
     <div id="board"></div>
     <p id="status">Current Player: A</p>
+    <p id="selectedPiece">Selected: None</p>
+
+
 
     <div id="controls">
-        <span class="move-button" data-direction="F">Forward</span>
-        <span class="move-button" data-direction="B">Backward</span>
-        <span class="move-button" data-direction="L">Left</span>
-        <span class="move-button" data-direction="R">Right</span>
-        <span class="move-button" data-direction="FL">Forward-Left</span>
-        <span class="move-button" data-direction="FR">Forward-Right</span>
-        <span class="move-button" data-direction="BL">Backward-Left</span>
-        <span class="move-button" data-direction="BR">Backward-Right</span>
+        <span class="move-button" data-direction="F">F</span>
+        <span class="move-button" data-direction="B">B</span>
+        <span class="move-button" data-direction="L">L</span>
+        <span class="move-button" data-direction="R">R</span>
+        <span class="move-button" data-direction="FL">FL</span>
+        <span class="move-button" data-direction="FR">FR</span>
+        <span class="move-button" data-direction="BL">BL</span>
+        <span class="move-button" data-direction="BR">BR</span>
     </div>
+
 
     <button id="restartButton" class="restart-button">Restart Game</button>
 
@@ -137,7 +188,6 @@
         <ul></ul>
     </div>
 
-    <!-- Link to the external JavaScript file -->
     <script src="game1.js"></script>
 </body>
 
