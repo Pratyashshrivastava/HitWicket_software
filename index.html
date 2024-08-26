@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess-like Game</title>
+    <style>
+        /* Add basic styling for the game grid and pieces */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #040b29;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: white;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            grid-template-rows: repeat(5, 50px);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #373232;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #1e1e1e;
+        }
+
+        .A {
+            color: red;
+        }
+
+        .B {
+            color: blue;
+        }
+
+        .selected {
+            border: 2px solid green;
+        }
+
+        #controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 260px;
+        }
+
+        .move-button {
+            margin: 5px;
+            padding: 5px;
+            cursor: pointer;
+            border: 1px solid #000;
+            background-color: lightgray;
+            flex-basis: 45%;
+            text-align: center;
+        }
+
+        .restart-button {
+            margin-top: 20px;
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid #000;
+            background-color: lightcoral;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Ensure paragraph text is white */
+        p {
+            color: white;
+        }
+
+        /* Move history styling */
+        #moveHistory {
+            margin-top: 20px;
+            width: 300px;
+            color: white;
+        }
+
+        #moveHistory ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        #moveHistory ul li {
+            margin: 5px 0;
+        }
+
+        /* Captured Piece Styling in Move History */
+        .captured {
+            color: #ff4d4d;
+            /* Highlight captured pieces in red */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chess-like Game</h1>
+    <div id="board"></div>
+    <p id="status">Current Player: A</p>
+
+    <div id="controls">
+        <span class="move-button" data-direction="F">Forward</span>
+        <span class="move-button" data-direction="B">Backward</span>
+        <span class="move-button" data-direction="L">Left</span>
+        <span class="move-button" data-direction="R">Right</span>
+        <span class="move-button" data-direction="FL">Forward-Left</span>
+        <span class="move-button" data-direction="FR">Forward-Right</span>
+        <span class="move-button" data-direction="BL">Backward-Left</span>
+        <span class="move-button" data-direction="BR">Backward-Right</span>
+    </div>
+
+    <button id="restartButton" class="restart-button">Restart Game</button>
+
+    <div id="moveHistory">
+        <h2>Move History</h2>
+        <ul></ul>
+    </div>
+
+    <!-- Link to the external JavaScript file -->
+    <script src="game1.js"></script>
+</body>
+
+</html>
