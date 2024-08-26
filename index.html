@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess-like Game</title>
     <style>
-        /* Add basic styling for the game grid and pieces */
         body {
             display: flex;
             flex-direction: column;
@@ -64,47 +63,30 @@
             width: 260px;
         }
 
-        /* .move-button {
-            margin: 5px;
-            padding: 5px;
-            cursor: pointer;
-            border: 1px solid #000;
-            background-color: lightgray;
-            flex-basis: 45%;
-            text-align: center;
-        } */
-        /* General button styling */
+
         .move-button {
             margin: 5px;
             padding: 10px 20px;
             cursor: pointer;
             border: none;
             background-color: #0c1a37;
-            /* Dark blue background */
             color: white;
-            /* White text */
             font-weight: bold;
             font-size: 16px;
             border-radius: 5px;
-            /* Rounded corners */
             text-align: center;
             display: inline-block;
             width: 10px;
-            /* Set width */
             height: 20px;
-            /* Set height */
             transition: background-color 0.3s ease;
-            /* Smooth transition for hover effect */
         }
 
         .move-button:hover {
             background-color: #162a53;
-            /* Slightly lighter blue on hover */
         }
 
         .move-button:disabled {
             background-color: #2c3e50;
-            /* Grayish-blue when disabled */
             cursor: not-allowed;
         }
 
@@ -119,12 +101,10 @@
             color: white;
         }
 
-        /* Ensure paragraph text is white */
         p {
             color: white;
         }
 
-        /* Move history styling */
         #moveHistory {
             margin-top: 20px;
             width: 300px;
@@ -143,18 +123,14 @@
             margin: 5px 0;
         }
 
-        /* Captured Piece Styling in Move History */
         .captured {
             color: #ff4d4d;
-            /* Highlight captured pieces in red */
         }
 
-        /* Rotate the board for Player B's turn */
         .rotated-board {
             transform: rotate(180deg);
         }
 
-        /* Rotate each piece back to be readable */
         .rotated-board .cell {
             transform: rotate(180deg);
         }
@@ -166,7 +142,6 @@
             color: green;
             text-align: center;
             display: none;
-            /* Hide it initially */
         }
 
         #winnerMessage.winner {
@@ -179,14 +154,13 @@
         #selectedPiece {
             margin-top: 10px;
             color: white;
-            /* Match this with your current UI theme */
             font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <h1>Chess-like Game</h1>
+    <h1>Bishops Gone Wild</h1>
     <div id="winnerMessage"></div>
 
     <div id="board"></div>
@@ -194,25 +168,8 @@
     <p id="selectedPiece">Selected: None</p>
 
 
-    <!-- <div id="controls">
-        <span class="move-button" data-direction="F"> B</span>
-        <span class="move-button" data-direction="B"> F</span>
-        <span class="move-button" data-direction="R">Left</span>
-        <span class="move-button" data-direction="L">Right</span>
-        <span class="move-button" data-direction="FL">Forward-Left</span>
-        <span class="move-button" data-direction="FR">Forward-Right</span>
-        <span class="move-button" data-direction="BL">Backward-Left</span>
-        <span class="move-button" data-direction="BR">Backward-Right</span>
-    </div> -->
+
     <div id="controls">
-        <!-- <span class="move-button" data-direction="F">Forward</span>
-        <span class="move-button" data-direction="B">Backward</span>
-        <span class="move-button" data-direction="L">Left</span>
-        <span class="move-button" data-direction="R">Right</span> -->
-        <!-- <span class="move-button" data-direction="FL">Forward-Left</span>
-        <span class="move-button" data-direction="FR">Forward-Right</span>
-        <span class="move-button" data-direction="BL">Backward-Left</span>
-        <span class="move-button" data-direction="BR">Backward-Right</span> -->
         <span class="move-button" data-direction="F">F</span>
         <span class="move-button" data-direction="B">B</span>
         <span class="move-button" data-direction="L">L</span>
@@ -231,7 +188,6 @@
         <ul></ul>
     </div>
 
-    <!-- Link to the external JavaScript file -->
     <script src="game1.js"></script>
 </body>
 
