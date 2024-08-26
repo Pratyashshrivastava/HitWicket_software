@@ -28,6 +28,8 @@
             grid-template-rows: repeat(5, 50px);
             gap: 5px;
             margin-top: 20px;
+            transition: transform 0.5s ease-in-out;
+
         }
 
         .cell {
@@ -111,6 +113,16 @@
             color: #ff4d4d;
             /* Highlight captured pieces in red */
         }
+
+        /* Rotate the board for Player B's turn */
+        .rotated-board {
+            transform: rotate(180deg);
+        }
+
+        /* Rotate each piece back to be readable */
+        .rotated-board .cell {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 
@@ -119,6 +131,16 @@
     <div id="board"></div>
     <p id="status">Current Player: A</p>
 
+    <!-- <div id="controls">
+        <span class="move-button" data-direction="F"> B</span>
+        <span class="move-button" data-direction="B"> F</span>
+        <span class="move-button" data-direction="R">Left</span>
+        <span class="move-button" data-direction="L">Right</span>
+        <span class="move-button" data-direction="FL">Forward-Left</span>
+        <span class="move-button" data-direction="FR">Forward-Right</span>
+        <span class="move-button" data-direction="BL">Backward-Left</span>
+        <span class="move-button" data-direction="BR">Backward-Right</span>
+    </div> -->
     <div id="controls">
         <span class="move-button" data-direction="F">Forward</span>
         <span class="move-button" data-direction="B">Backward</span>
@@ -129,6 +151,7 @@
         <span class="move-button" data-direction="BL">Backward-Left</span>
         <span class="move-button" data-direction="BR">Backward-Right</span>
     </div>
+
 
     <button id="restartButton" class="restart-button">Restart Game</button>
 
